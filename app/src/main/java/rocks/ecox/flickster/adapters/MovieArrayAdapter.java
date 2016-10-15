@@ -32,7 +32,16 @@ import java.util.List;
 import rocks.ecox.flickster.R;
 import rocks.ecox.flickster.models.Movie;
 
+import static rocks.ecox.flickster.R.id.tvOverview;
+import static rocks.ecox.flickster.R.id.tvTitle;
+
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
+    // View lookup cache
+    private static class ViewHolder {
+        ImageView ivImage;
+        TextView tvTitle;
+        TextView tvOverview;
+    }
 
     public MovieArrayAdapter(Context context, List<Movie> movies) {
         super(context, android.R.layout.simple_list_item_1, movies);
@@ -43,26 +52,32 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
         // Get the data item for position
         Movie movie = getItem(position);
 
+        ViewHolder viewHolder;
         // Check the existing view being used
         if (convertView == null) {
+            viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.item_movie, parent, false);
+            // Find the ImageView
+            viewHolder.ivImage = (ImageView) convertView.findViewById(R.id.ivMovieImage);
+            viewHolder.tvTitle = (TextView) convertView.findViewById(tvTitle);
+            viewHolder.tvOverview = (TextView) convertView.findViewById(tvOverview);
+            // Cache the viewHolder object inside the fresh view
+            convertView.setTag(viewHolder);
+        } else {
+            // View is being recycled, get viewHolder object from tag
+            viewHolder = (ViewHolder) convertView.getTag();
         }
 
+        // Set the background to black
         convertView.setBackgroundColor(Color.BLACK);
-        // Find the ImageView
-        ImageView ivImage = (ImageView) convertView.findViewById(R.id.ivMovieImage);
         // Clear out image from convertView
-        ivImage.setImageResource(0);
-
-        TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-        TextView tvOverview = (TextView) convertView.findViewById(R.id.tvOverview);
+        viewHolder.ivImage.setImageResource(0);
 
         // Populate data
-        tvTitle.setText(movie.getOriginalTitle());
-        tvOverview.setText(movie.getOverview());
-
-        Picasso.with(getContext()).load(movie.getPosterPath()).into(ivImage);
+        viewHolder.tvTitle.setText(movie.getOriginalTitle());
+        viewHolder.tvOverview.setText(movie.getOverview());
+        Picasso.with(getContext()).load(movie.getPosterPath()).into(viewHolder.ivImage);
 
         // Return the view
         return convertView;
