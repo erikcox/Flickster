@@ -17,6 +17,7 @@
 package rocks.ecox.flickster;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 
@@ -35,9 +36,12 @@ import rocks.ecox.flickster.models.Movie;
 
 public class MovieActivity extends AppCompatActivity {
 
+    private SwipeRefreshLayout swipeContainer;
     ArrayList<Movie> movies;
     MovieArrayAdapter movieAdapter;
     ListView lvItems;
+    AsyncHttpClient client = new AsyncHttpClient();
+    String url = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
 
 
     @Override
@@ -45,16 +49,30 @@ public class MovieActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie);
 
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchMoviesAsync(0);
+            }
+        });
+
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+
         lvItems = (ListView) findViewById(R.id.lvMovies);
         movies = new ArrayList<>();
         movieAdapter = new MovieArrayAdapter(this, movies);
         lvItems.setAdapter(movieAdapter);
+        fetchMoviesAsync(0);
+    }
 
-        String url = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
-
-        AsyncHttpClient client = new AsyncHttpClient();
-
-        client.get(url, new JsonHttpResponseHandler(){
+    public void fetchMoviesAsync(int page) {
+        client.get(url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
@@ -62,7 +80,9 @@ public class MovieActivity extends AppCompatActivity {
 
                 try {
                     moviesJsonResults = response.getJSONArray("results");
+                    movies.clear();
                     movies.addAll(Movie.fromJSONArray(moviesJsonResults));
+                    swipeContainer.setRefreshing(false);
                     movieAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
