@@ -17,6 +17,7 @@
 package rocks.ecox.flickster.adapters;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,11 +74,18 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
         convertView.setBackgroundColor(Color.BLACK);
         // Clear out image from convertView
         viewHolder.ivImage.setImageResource(0);
+        // Determine orientation
+        int orientation = convertView.getResources().getConfiguration().orientation;
 
         // Populate data
         viewHolder.tvTitle.setText(movie.getOriginalTitle());
         viewHolder.tvOverview.setText(movie.getOverview());
-        Picasso.with(getContext()).load(movie.getPosterPath()).into(viewHolder.ivImage);
+
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Picasso.with(getContext()).load(movie.getBackdropPath()).into(viewHolder.ivImage);
+        } else {
+            Picasso.with(getContext()).load(movie.getPosterPath()).into(viewHolder.ivImage);
+        }
 
         // Return the view
         return convertView;
