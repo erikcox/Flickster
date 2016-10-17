@@ -19,6 +19,8 @@ package rocks.ecox.flickster.adapters;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +41,7 @@ import static rocks.ecox.flickster.R.id.tvTitle;
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
     // View lookup cache
     private static class ViewHolder {
+        Drawable placeholder;
         ImageView ivImage;
         TextView tvTitle;
         TextView tvOverview;
@@ -60,6 +63,7 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.item_movie, parent, false);
             // Find the ImageView
+            viewHolder.placeholder = (Drawable) ContextCompat.getDrawable(getContext(), R.drawable.poster_placeholder);
             viewHolder.ivImage = (ImageView) convertView.findViewById(R.id.ivMovieImage);
             viewHolder.tvTitle = (TextView) convertView.findViewById(tvTitle);
             viewHolder.tvOverview = (TextView) convertView.findViewById(tvOverview);
@@ -82,9 +86,17 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
         viewHolder.tvOverview.setText(movie.getOverview());
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Picasso.with(getContext()).load(movie.getBackdropPath()).into(viewHolder.ivImage);
+            Picasso.with(getContext())
+                    .load(movie.getBackdropPath())
+                    .error(viewHolder.placeholder)
+                    .placeholder(viewHolder.placeholder)
+                    .into(viewHolder.ivImage);
         } else {
-            Picasso.with(getContext()).load(movie.getPosterPath()).into(viewHolder.ivImage);
+            Picasso.with(getContext())
+                    .load(movie.getPosterPath())
+                    .error(viewHolder.placeholder)
+                    .placeholder(viewHolder.placeholder)
+                    .into(viewHolder.ivImage);
         }
 
         // Return the view
