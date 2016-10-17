@@ -46,7 +46,6 @@ public class MovieActivity extends AppCompatActivity {
     AsyncHttpClient client = new AsyncHttpClient();
     String url = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
