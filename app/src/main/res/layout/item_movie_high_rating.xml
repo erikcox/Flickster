@@ -29,30 +29,4 @@
         android:layout_alignParentTop="true"
         tools:src="@mipmap/ic_launcher"/>
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/ivMovieImage"
-        android:layout_toRightOf="@+id/ivMovieImage"
-        android:paddingLeft="@dimen/padding_detail_side"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/white"
-        tools:text="@string/text_title_placeholder"/>
-
-    <TextView
-        android:id="@+id/tvOverview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvTitle"
-        android:layout_toEndOf="@+id/ivMovieImage"
-        android:layout_toRightOf="@+id/ivMovieImage"
-        android:paddingLeft="@dimen/padding_detail_side"
-        android:paddingRight="@dimen/padding_detail_side"
-        android:textColor="@android:color/darker_gray"
-        tools:text="@string/text_overview_placeholder"
-        android:maxLines="10"
-        android:ellipsize="marquee"/>
-
 </RelativeLayout>

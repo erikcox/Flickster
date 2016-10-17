@@ -55,45 +55,53 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for position
         Movie movie = getItem(position);
+        // Determine orientation
+        int orientation = getContext().getResources().getConfiguration().orientation;
+        // Determine the movie rating
+        Double rating = movie.getRating();
+        final Double highRating = 5.0;
+        String layout = "";
 
         ViewHolder viewHolder;
-        // Check the existing view being used
-        if (convertView == null) {
-            viewHolder = new ViewHolder();
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.item_movie, parent, false);
-            // Find the ImageView
-            viewHolder.placeholder = (Drawable) ContextCompat.getDrawable(getContext(), R.drawable.poster_placeholder);
-            viewHolder.ivImage = (ImageView) convertView.findViewById(R.id.ivMovieImage);
-            viewHolder.tvTitle = (TextView) convertView.findViewById(tvTitle);
-            viewHolder.tvOverview = (TextView) convertView.findViewById(tvOverview);
-            // Cache the viewHolder object inside the fresh view
-            convertView.setTag(viewHolder);
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        viewHolder = new ViewHolder();
+
+        // Choose whether layout should have movie details
+        if (orientation == Configuration.ORIENTATION_PORTRAIT && rating >= highRating) {
+            convertView = inflater.inflate(R.layout.item_movie_high_rating, parent, false);
+            layout = "highRating";
         } else {
-            // View is being recycled, get viewHolder object from tag
-            viewHolder = (ViewHolder) convertView.getTag();
+            convertView = inflater.inflate(R.layout.item_movie, parent, false);
+            layout = "lowRating";
         }
+        // Find the ImageView
+        viewHolder.placeholder = (Drawable) ContextCompat.getDrawable(getContext(), R.drawable.poster_placeholder);
+        viewHolder.ivImage = (ImageView) convertView.findViewById(R.id.ivMovieImage);
+        viewHolder.tvTitle = (TextView) convertView.findViewById(tvTitle);
+        viewHolder.tvOverview = (TextView) convertView.findViewById(tvOverview);
+        // Cache the viewHolder object inside the fresh view
+        convertView.setTag(viewHolder);
 
         // Set the background to black
         convertView.setBackgroundColor(Color.BLACK);
         // Clear out image from convertView
         viewHolder.ivImage.setImageResource(0);
-        // Determine orientation
-        int orientation = convertView.getResources().getConfiguration().orientation;
 
         // Populate data
-        viewHolder.tvTitle.setText(movie.getOriginalTitle());
-        viewHolder.tvOverview.setText(movie.getOverview());
+        if (layout.equals("lowRating")) {
+            viewHolder.tvTitle.setText(movie.getOriginalTitle());
+            viewHolder.tvOverview.setText(movie.getOverview());
+        }
 
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT && layout.equals("lowRating")) {
             Picasso.with(getContext())
-                    .load(movie.getBackdropPath())
+                    .load(movie.getPosterPath())
                     .error(viewHolder.placeholder)
                     .placeholder(viewHolder.placeholder)
                     .into(viewHolder.ivImage);
         } else {
             Picasso.with(getContext())
-                    .load(movie.getPosterPath())
+                    .load(movie.getBackdropPath())
                     .error(viewHolder.placeholder)
                     .placeholder(viewHolder.placeholder)
                     .into(viewHolder.ivImage);
