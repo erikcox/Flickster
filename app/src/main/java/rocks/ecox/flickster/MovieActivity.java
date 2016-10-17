@@ -16,9 +16,12 @@
 
 package rocks.ecox.flickster;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -69,6 +72,18 @@ public class MovieActivity extends AppCompatActivity {
         movieAdapter = new MovieArrayAdapter(this, movies);
         lvItems.setAdapter(movieAdapter);
         fetchMoviesAsync(0);
+
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view,int position, long l) {
+                Movie movie = movieAdapter.getItem(position);
+
+                Intent intent = new Intent(getApplication(), MovieDetailActivity.class);
+                intent.putExtra("movie", movie);
+                startActivity(intent);
+            }
+        });
     }
 
     public void fetchMoviesAsync(int page) {

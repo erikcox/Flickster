@@ -20,4 +20,7 @@
     <string name="text_title_placeholder">Lorem Ipsum: The Final Chapter</string>
     <string name="tag_item_movie">item_movie</string>
     <string name="tag_item_movie_high">item_movie_high_rating</string>
+    <string name="movie_title">Movie Title</string>
+    <string name="title_movie_details">Movie Details</string>
+    <string name="text_release_date">Release date:</string>
 </resources>
